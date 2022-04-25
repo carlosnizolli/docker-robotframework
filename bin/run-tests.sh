@@ -4,16 +4,16 @@ HOME=${ROBOT_WORK_DIR}
 
 if [ $ROBOT_THREADS -eq 1 ]
 then
-  #  xvfb-run \
-   #     --server-args="-screen 0 ${SCREEN_WIDTH}x${SCREEN_HEIGHT}x${SCREEN_COLOUR_DEPTH} -ac" \
+    xvfb-run \
+        --server-args="-screen 0 ${SCREEN_WIDTH}x${SCREEN_HEIGHT}x${SCREEN_COLOUR_DEPTH} -ac" \
         robot \
             ${ROBOT_LISTENER} \
             --outputDir ${ROBOT_REPORTS_DIR} \
             ${ROBOT_OPTIONS} \
             $ROBOT_TESTS_DIR 
 else
-   # xvfb-run \
-    #    --server-args="-screen 0 ${SCREEN_WIDTH}x${SCREEN_HEIGHT}x${SCREEN_COLOUR_DEPTH} -ac" \
+    xvfb-run \
+        --server-args="-screen 0 ${SCREEN_WIDTH}x${SCREEN_HEIGHT}x${SCREEN_COLOUR_DEPTH} -ac" \
         pabot \
         --verbose \
         --processes $ROBOT_THREADS \
