@@ -12,8 +12,6 @@ ENV SCREEN_COLOUR_DEPTH 24
 ENV SCREEN_HEIGHT 1080
 ENV SCREEN_WIDTH 1920
 
-ENV GECKO_DRIVER_VERSION v0.30.0
-
 ENV METRICS_LOGO https://upload.wikimedia.org/wikipedia/commons/e/e4/Robot-framework-logo.png
 
 ENV TZ America/Sao_Paulo
@@ -67,29 +65,13 @@ RUN pip3 install \
     tesults \
     robot-tesults 
 
-#RUN npx playwright install-deps  
-
 RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
 
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
-RUN apt-get install -y \
-    wget \
-    # Download Gecko drivers directly from the GitHub repository
-    && wget -q "https://github.com/mozilla/geckodriver/releases/download/$GECKO_DRIVER_VERSION/geckodriver-$GECKO_DRIVER_VERSION-linux64.tar.gz" \
-    && tar xzf geckodriver-$GECKO_DRIVER_VERSION-linux64.tar.gz \
-    && mkdir -p /opt/robotframework/drivers/ \
-    && mv geckodriver /opt/robotframework/drivers/geckodriver \
-    && rm geckodriver-$GECKO_DRIVER_VERSION-linux64.tar.gz \
-    && apt-get remove -y \
-    wget \
-    && apt-get clean all
-
+RUN echo "$TZ" | tee /etc/timezone \
+    && dpkg-reconfigure --frontend noninteractive tzdata
 
 RUN rfbrowser init 
-    ##&& ln -sf /usr/lib64/libstdc++.so.6 /usr/local/lib/python3.8/dist-packages/Browser/wrapper/node_modules/playwright-core/.local-browsers/firefox-1319/libstdc++.so.6
-  
-
+ 
 RUN mkdir -p ${ROBOT_REPORTS_DIR} \
   && mkdir -p ${ROBOT_WORK_DIR} \
   && chown ${ROBOT_UID}:${ROBOT_GID} ${ROBOT_REPORTS_DIR} \
@@ -99,13 +81,12 @@ RUN mkdir -p ${ROBOT_REPORTS_DIR} \
 RUN chmod ugo+w /var/log \
   && chown ${ROBOT_UID}:${ROBOT_GID} /var/log
 
-ENV PATH=/opt/robotframework/bin:/opt/robotframework/drivers:$PATH
+ENV PATH=/opt/robotframework/bin:$PATH
 
 VOLUME ${ROBOT_REPORTS_DIR}
 
 USER ${ROBOT_UID}:${ROBOT_GID}
 
 WORKDIR ${ROBOT_WORK_DIR}
-
 
 CMD ["run-tests.sh"]
