@@ -17,7 +17,8 @@
 - robotframework-notifications
 - pg8000==1.26.0
 - tesults
-- robot-tesults 
+- robot-tesults
+- robotframework-jsonlibrary==0.3.1 
 
 ### Orientações gerais
 - Utiliza o timezone São Paulo

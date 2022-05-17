@@ -63,7 +63,8 @@ RUN pip3 install \
     robotframework-notifications \
     pg8000==1.26.0 \
     tesults \
-    robot-tesults 
+    robot-tesults \
+    robotframework-jsonlibrary==0.3.1
 
 RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
 
