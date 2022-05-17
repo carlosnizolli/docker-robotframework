@@ -64,7 +64,9 @@ RUN pip3 install \
     pg8000==1.26.0 \
     tesults \
     robot-tesults \
-    robotframework-jsonlibrary==0.3.1
+    robotframework-jsonlibrary==0.3.1 \
+    robotframework-autorecorder \
+    robotframework-screencaplibrary==1.6.0
 
 RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
 

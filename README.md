@@ -19,6 +19,8 @@
 - tesults
 - robot-tesults
 - robotframework-jsonlibrary==0.3.1 
+- robotframework-autorecorder 
+- robotframework-screencaplibrary==1.6.0
 
 ### Orientações gerais
 - Utiliza o timezone São Paulo
