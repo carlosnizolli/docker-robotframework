@@ -42,6 +42,8 @@ RUN apt-get install -y xvfb
 
 RUN apt-get install -y firefox
 
+RUN apt-get install -y libgtk-3-dev
+
 RUN pip3 install \
     --no-cache-dir \
     cryptography==3.1.1 \
