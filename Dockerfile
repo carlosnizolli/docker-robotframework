@@ -44,6 +44,13 @@ RUN apt-get install -y firefox
 
 RUN apt-get install -y libgtk-3-dev
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libnss3 \
+    libxss1 \
+    libasound2 \
+    fonts-noto-color-emoji \
+    libxtst6
+    
 RUN apt-get -y install chromium-browser
 
 RUN pip3 install \
@@ -77,7 +84,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
 RUN echo "$TZ" | tee /etc/timezone \
     && dpkg-reconfigure --frontend noninteractive tzdata
 
-RUN rfbrowser init 
+RUN rfbrowser init
  
 RUN mkdir -p ${ROBOT_REPORTS_DIR} \
   && mkdir -p ${ROBOT_WORK_DIR} \
