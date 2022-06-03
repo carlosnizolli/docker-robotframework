@@ -44,6 +44,8 @@ RUN apt-get install -y firefox
 
 RUN apt-get install -y libgtk-3-dev
 
+RUN apt-get -y install chromium-browser
+
 RUN pip3 install \
     --no-cache-dir \
     cryptography==3.1.1 \
