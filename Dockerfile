@@ -58,6 +58,7 @@ RUN pip3 install \
     cryptography==3.1.1 \
     robotframework-xvfb \
     robotframework-csvlib \
+    requests==2.20.1 \
     robotframework==5.0 \  
     robotframework-browser==12.3.0 \  
     robotframework-databaselibrary==1.2.4 \
