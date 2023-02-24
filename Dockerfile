@@ -32,7 +32,7 @@ RUN  apt-get upgrade -y
 RUN  apt-get install -y python3-pip 
 
 RUN  apt-get install -y curl
-RUN  curl -sL https://deb.nodesource.com/setup_14.x | bash -
+RUN  curl -sL https://deb.nodesource.com/setup_18.x | bash -
 RUN  apt-get install -yq nodejs build-essential \
       && node -v \
       && npm -v \
@@ -55,28 +55,28 @@ RUN apt-get -y install chromium-browser
 
 RUN pip3 install \
     --no-cache-dir \
-    cryptography==3.1.1 \
+    cryptography==39.0.1 \
     robotframework-xvfb \
     robotframework-csvlib \
-    requests==2.20.1 \
-    robotframework==5.0 \  
-    robotframework-browser==12.3.0 \  
+    requests==2.28.2 \
+    robotframework==6.0.2 \  
+    robotframework-browser==16.0.0 \  
     robotframework-databaselibrary==1.2.4 \
-    robotframework-datadriver==1.6.0 \
+    robotframework-datadriver==1.7.0 \
     robotframework-datetime-tz==1.0.6 \
     robotframework-faker==5.0.0 \
     robotframework-ftplibrary==1.9 \
-    robotframework-imaplibrary2==0.4.2 \
-    robotframework-pabot==2.5.2 \
-    robotframework-requests==0.9.2 \
+    robotframework-imaplibrary2==0.4.6 \
+    robotframework-pabot==2.13.0 \
+    robotframework-requests==0.9.4 \
     robotframework-sshlibrary==3.8.0 \
     PyYAML \
-    robotframework-metrics==3.2.2 \
+    robotframework-metrics==3.3.3 \
     robotframework-notifications \
-    pg8000==1.26.0 \
+    pg8000==1.29.4 \
     tesults \
     robot-tesults \
-    robotframework-jsonlibrary==0.3.1 \
+    robotframework-jsonlibrary==0.5 \
     robotframework-autorecorder \
     robotframework-screencaplibrary==1.6.0
 
