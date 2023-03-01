@@ -28,7 +28,6 @@
 - Para executar é necessário informar caminho dos test_cases na variável ROBOT_TESTS_DIR
 - O diretório de logs pode ser alterado com a variável ROBOT_REPORTS_DIR
 - Por padrão o Metrics salva o dashboard com o nome metrics-log.html dentro da pasta de logs
-- O Metrics utiliza uma imagem padrão do robot, para alterar a imagem presente no dashboard informar na variável METRICS_LOGO
 - Para utilizar o tesults basta passar o listener completo na variável ROBOT_LISTENER
 - Usar a variável ROBOT_OPTIONS para passar options do robot framework como --exitonfailure, --name, etc.
 
@@ -41,14 +40,13 @@ Esta imagem está no dockerhub, para usar no actions basta adicionar os seguinte
             - name: Create folder for reports
               run:  mkdir -m 777 reports
             - name: Execute Robot tests
-              uses: carlosnizolli/docker-robotframework@v02
+              uses: carlosnizolli/docker-robotframework@v06.1
               env:
                 DOCKER_SHM_SIZE: 22000000
                 BROWSER: firefox
                 ROBOT_TESTS_DIR: ${{ github.workspace }}/SuaPasta/SeusTestes.robot
                 ROBOT_REPORTS_DIR: ${{ github.workspace }}/reports
                 ROBOT_OPTIONS: "--exitonfailure"
-                METRICS_LOGO: http://seuendereco.com/sua_imagem.svg
                 ROBOT_LISTENER: --listener TesultsListener:target=${{ secrets.TESULTS_TARGET }}:build-name=SeuBuildName
  
  No exemplo está sendo criada uma pasta para gravação dos logs o que permite maior controle para exportações.

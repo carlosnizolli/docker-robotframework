@@ -12,8 +12,6 @@ ENV SCREEN_COLOUR_DEPTH 24
 ENV SCREEN_HEIGHT 1080
 ENV SCREEN_WIDTH 1920
 
-ENV METRICS_LOGO https://upload.wikimedia.org/wikipedia/commons/e/e4/Robot-framework-logo.png
-
 ENV TZ America/Sao_Paulo
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone

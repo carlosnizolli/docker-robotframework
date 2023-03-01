@@ -26,6 +26,6 @@ fi
 
 ROBOT_EXIT_CODE=$?
 
-robotmetrics -M metrics-log.html --inputpath $ROBOT_REPORTS_DIR --output output.xml --log log.html --logo  "${METRICS_LOGO}"
+robotmetrics -M metrics-log.html --inputpath $ROBOT_REPORTS_DIR --output output.xml --log log.html
 
 exit $ROBOT_EXIT_CODE
