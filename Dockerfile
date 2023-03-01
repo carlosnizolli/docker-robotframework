@@ -69,7 +69,6 @@ RUN pip3 install \
     robotframework-requests==0.9.4 \
     robotframework-sshlibrary==3.8.0 \
     PyYAML \
-    robotframework-metrics==3.3.3 \
     robotframework-notifications \
     pg8000==1.29.4 \
     tesults \
