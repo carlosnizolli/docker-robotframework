@@ -1,28 +1,28 @@
 # Docker para o Robot Framework em Ubuntu
 
 ### Contém as seguintes Libs
-    cryptography==39.0.1
-    robotframework-xvfb
-    robotframework-csvlib
-    requests==2.28.2 
-    robotframework==6.0.2  
-    robotframework-browser==16.0.0 
-    robotframework-databaselibrary==1.2.4
-    robotframework-datadriver==1.7.0
-    robotframework-datetime-tz==1.0.6
-    robotframework-faker==5.0.0
-    robotframework-ftplibrary==1.9
-    robotframework-imaplibrary2==0.4.6
-    robotframework-pabot==2.13.0
-    robotframework-requests==0.9.4
-    robotframework-sshlibrary==3.8.0
-    PyYAML
-    robotframework-notifications
-    pg8000==1.29.4
-    tesults
-    robot-tesults
-    robotframework-jsonlibrary==0.5
-    robotframework-autorecorder
+    cryptography==39.0.1 \
+    robotframework-xvfb \
+    robotframework-csvlib \
+    requests==2.28.2 \
+    robotframework==6.0.2 \  
+    robotframework-browser==16.0.0 \  
+    robotframework-databaselibrary==1.2.4 \
+    robotframework-datadriver==1.7.0 \
+    robotframework-datetime-tz==1.0.6 \
+    robotframework-faker==5.0.0 \
+    robotframework-ftplibrary==1.9 \
+    robotframework-imaplibrary2==0.4.6 \
+    robotframework-pabot==2.13.0 \
+    robotframework-requests==0.9.4 \
+    robotframework-sshlibrary==3.8.0 \
+    PyYAML \
+    robotframework-notifications \
+    pg8000==1.29.4 \
+    tesults \
+    robot-tesults \
+    robotframework-jsonlibrary==0.5 \
+    robotframework-autorecorder \
     robotframework-screencaplibrary==1.6.0
 
 ### Orientações gerais
