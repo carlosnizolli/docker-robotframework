@@ -1,99 +1,178 @@
-FROM ubuntu:20.04
+# ============================================================================
+# Stage 1: Base - Sistema operacional e configurações básicas
+# ============================================================================
+FROM ubuntu:24.04 AS base
 
-LABEL maintainer="Carlos Nizolli carlosnizolli@gmail.com - Robot Framework and libs"
+LABEL maintainer="Carlos Nizolli carlosbarboza@logcomex.com - Robot Framework and libs"
+LABEL org.opencontainers.image.title="Robot Framework QA - Web/E2E Testing"
+LABEL org.opencontainers.image.description="Imagem Docker completa para testes automatizados Web/E2E com Robot Framework, Browser Library, Playwright, Self-Healing e IA"
+LABEL org.opencontainers.image.authors="Carlos Nizolli <carlosbarboza@logcomex.com>"
+LABEL org.opencontainers.image.vendor="Logcomex"
+LABEL org.opencontainers.image.documentation="https://github.com/carlosnizolli/docker-robotframework/blob/main/README.md"
+LABEL org.opencontainers.image.source="https://github.com/carlosnizolli/docker-robotframework"
+LABEL org.opencontainers.image.url="https://github.com/carlosnizolli/docker-robotframework"
+LABEL org.opencontainers.image.version="7.2.2"
+LABEL com.logcomex.image.type="web-testing"
+LABEL com.logcomex.robot.version="7.2.2"
+LABEL com.logcomex.browser.library="19.12.3"
 
-ENV ROBOT_REPORTS_DIR /opt/robotframework/reports
+# Variáveis de ambiente
+ENV ROBOT_REPORTS_DIR=/opt/robotframework/reports \
+    ROBOT_TESTS_DIR=/opt/robotframework/tests \
+    ROBOT_WORK_DIR=/opt/robotframework/temp \
+    SCREEN_COLOUR_DEPTH=24 \
+    SCREEN_HEIGHT=1080 \
+    SCREEN_WIDTH=1920 \
+    LANG=pt_BR.UTF-8 \
+    LC_ALL=pt_BR.UTF-8 \
+    TZ=America/Sao_Paulo \
+    ROBOT_UID=1000 \
+    ROBOT_GID=1000 \
+    ROBOT_THREADS=1 \
+    PATH=/opt/robotframework/bin:$PATH
 
-ENV ROBOT_TESTS_DIR /opt/robotframework/tests
-
-ENV ROBOT_WORK_DIR /opt/robotframework/temp
-
-ENV SCREEN_COLOUR_DEPTH 24
-ENV SCREEN_HEIGHT 1080
-ENV SCREEN_WIDTH 1920
-
-ENV TZ America/Sao_Paulo
-
+# Configurar timezone
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-ENV ROBOT_UID 1000
-ENV ROBOT_GID 1000
-
-ENV ROBOT_THREADS 1
-
-COPY bin/run-tests.sh /opt/robotframework/bin/
-RUN chmod 777 /opt/robotframework/bin/run-tests.sh
-RUN chmod u+x /opt/robotframework/bin/run-tests.sh
-
-RUN  apt-get update 
-RUN  apt-get upgrade -y
-RUN  apt-get install -y python3-pip 
-
-RUN  apt-get install -y curl
-RUN  curl -sL https://deb.nodesource.com/setup_18.x | bash -
-RUN  apt-get install -yq nodejs build-essential \
-      && node -v \
-      && npm -v \
-      && npm init -y
-
-RUN apt-get install -y xvfb
-
-RUN apt-get install -y firefox
-
-RUN apt-get install -y libgtk-3-dev
-
+# Instalar dependências do sistema em uma única camada (OTIMIZAÇÃO: consolidar apt-get)
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    # Locales e timezone
+    locales \
+    locales-all \
+    # Node.js e build tools
+    curl \
+    ca-certificates \
+    gnupg \
+    build-essential \
+    # Python
+    python3-pip \
+    python3-venv \
+    # Display e browsers
+    xvfb \
+    firefox \
+    chromium-browser \
+    libgtk-3-dev \
     libnss3 \
     libxss1 \
-    libasound2 \
     fonts-noto-color-emoji \
-    libxtst6
-    
-RUN apt-get -y install chromium-browser
-
-RUN pip3 install \
-    --no-cache-dir \
-    cryptography==39.0.1 \
-    robotframework-xvfb \
-    robotframework-csvlib \
-    requests==2.28.2 \
-    robotframework==6.0.2 \  
-    robotframework-browser==16.0.0 \  
-    robotframework-databaselibrary==1.2.4 \
-    robotframework-datadriver==1.7.0 \
-    robotframework-datetime-tz==1.0.6 \
-    robotframework-faker==5.0.0 \
-    robotframework-ftplibrary==1.9 \
-    robotframework-imaplibrary2==0.4.6 \
-    robotframework-pabot==2.13.0 \
-    robotframework-requests==0.9.4 \
-    robotframework-sshlibrary==3.8.0 \
-    PyYAML \
-    robotframework-notifications \
-    pg8000==1.29.4 \
-    tesults \
-    robot-tesults \
-    robotframework-jsonlibrary==0.5 \
-    robotframework-autorecorder \
-    robotframework-screencaplibrary==1.6.0
-
-RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
-
-RUN echo "$TZ" | tee /etc/timezone \
+    libxtst6 \
+    # OCR e PDF
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    libtesseract-dev \
+    poppler-utils \
+    # VPN
+    openvpn \
+    # Utilitários
+    apt-utils \
+    && rm -rf /var/lib/apt/lists/* \
     && dpkg-reconfigure --frontend noninteractive tzdata
 
+# Instalar Node.js 20.x (LTS)
+RUN curl -sL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -yq nodejs \
+    && node -v \
+    && npm -v \
+    && rm -rf /var/lib/apt/lists/*
+
+# ============================================================================
+# Stage 2: Python Dependencies - Instalar todas as dependências Python
+# ============================================================================
+FROM base AS python-deps
+
+# Configurar npm com retries e timeouts para evitar problemas de rede
+RUN npm config set registry https://registry.npmjs.org/ \
+    && npm config set fetch-retries 5 \
+    && npm config set fetch-retry-mintimeout 20000 \
+    && npm config set fetch-retry-maxtimeout 120000
+
+# Instalar dependências Python com cache mount (OTIMIZAÇÃO: BuildKit cache)
+# OTIMIZAÇÃO: Adicionar --no-cache-dir para reduzir tamanho da imagem
+# Nota: pytesseract precisa ser instalado primeiro pois robotframework-imagetotextlibrary
+# tem um bug no setup.py que tenta importar pytesseract durante a instalação
+RUN --mount=type=cache,target=/root/.cache/pip \
+    python3 -m pip install --upgrade --no-cache-dir --break-system-packages \
+    pytesseract
+
+RUN --mount=type=cache,target=/root/.cache/pip \
+    python3 -m pip install --upgrade --no-cache-dir --break-system-packages \
+    python-dotenv==1.1.0 \
+    robotframework==7.2.2 \
+    robotframework-browser==19.12.3 \
+    robotframework-xvfb \
+    robotframework-csvlib \
+    requests==2.31.0 \
+    robotframework-assertion-engine==3.0.3 \
+    robotframework-databaselibrary==1.4.4 \
+    robotframework-datadriver==1.11.1 \
+    robotframework-datetime-tz==1.0.6 \
+    robotframework-faker==5.0.0 \
+    robotframework-imaplibrary2==0.4.1 \
+    robotframework-pabot==2.18.0 \
+    robotframework-requests==1.0a14 \
+    robotframework-notifications \
+    pg8000==1.31.1 \
+    robotframework-jsonlibrary==0.5 \
+    robotframework-autorecorder \
+    robotframework-screencaplibrary==1.6.0 \
+    robotframework-jsonschemalibrary \
+    robotframework-retryfailed==0.2.0 \
+    robotframework-excellib==2.0.1 \
+    pdf2image==1.17.0 \
+    robotframework-pdf2textlibrary==1.0.1 \
+    robotframework-imagetotextlibrary==0.0.1 \
+    pyotp \
+    robotframework-otp==1.1.0 \
+    chardet
+
+# Instalar google-genai com versão mais recente que suporta protobuf 6.x
+RUN --mount=type=cache,target=/root/.cache/pip \
+    python3 -m pip install --no-cache-dir --break-system-packages \
+    google-genai==1.62.0
+
+# Instalar robotframework-heal separadamente para garantir compatibilidade
+RUN --mount=type=cache,target=/root/.cache/pip \
+    python3 -m pip install --no-cache-dir --break-system-packages \
+    "robotframework-heal==0.2.1"
+
+# ============================================================================
+# Stage 3: Playwright - Instalar browsers do Playwright
+# ============================================================================
+FROM python-deps AS playwright
+
+# Instalar Playwright Chrome com retry e tratamento de erros HTTP/2
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=0 \
+    PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT=300000
+
+RUN npx playwright install chrome --with-deps || \
+    (echo "⚠️ Tentativa 1 falhou, tentando novamente em 10s..." && \
+     sleep 10 && \
+     npx playwright install chrome --with-deps) || \
+    (echo "⚠️ Tentativa 2 falhou, tentando última vez em 15s com HTTP/1.1..." && \
+     sleep 15 && \
+     PLAYWRIGHT_DOWNLOAD_CONNECTION_TIMEOUT=600000 \
+     NODE_OPTIONS="--max-old-space-size=4096 --http-parser=legacy" \
+     npx playwright install chrome --with-deps || \
+     (echo "❌ Falha ao instalar Playwright Chrome após 3 tentativas" && exit 1))
+
+# Inicializar rfbrowser
 RUN rfbrowser init
- 
-RUN mkdir -p ${ROBOT_REPORTS_DIR} \
-  && mkdir -p ${ROBOT_WORK_DIR} \
-  && chown ${ROBOT_UID}:${ROBOT_GID} ${ROBOT_REPORTS_DIR} \
-  && chown ${ROBOT_UID}:${ROBOT_GID} ${ROBOT_WORK_DIR} \
-  && chmod ugo+w ${ROBOT_REPORTS_DIR} ${ROBOT_WORK_DIR}    
 
-RUN chmod ugo+w /var/log \
-  && chown ${ROBOT_UID}:${ROBOT_GID} /var/log
+# ============================================================================
+# Stage 4: Final - Imagem final com customizações
+# ============================================================================
+FROM playwright AS final
 
-ENV PATH=/opt/robotframework/bin:$PATH
+# Copiar script de execução
+COPY bin/run-tests.sh /opt/robotframework/bin/
+RUN chmod 755 /opt/robotframework/bin/run-tests.sh
+
+# Criar diretórios necessários e configurar permissões
+RUN mkdir -p ${ROBOT_REPORTS_DIR} ${ROBOT_WORK_DIR} \
+    && chown ${ROBOT_UID}:${ROBOT_GID} ${ROBOT_REPORTS_DIR} ${ROBOT_WORK_DIR} \
+    && chmod ugo+w ${ROBOT_REPORTS_DIR} ${ROBOT_WORK_DIR} \
+    && chmod ugo+w /var/log \
+    && chown ${ROBOT_UID}:${ROBOT_GID} /var/log
 
 VOLUME ${ROBOT_REPORTS_DIR}
 

@@ -1,55 +1,76 @@
-# Docker para o Robot Framework em Ubuntu
+# Docker — Robot Framework (Ubuntu)
 
-### Contém as seguintes Libs
-    cryptography==39.0.1 \
-    robotframework-xvfb \
-    robotframework-csvlib \
-    requests==2.28.2 \
-    robotframework==6.0.2 \  
-    robotframework-browser==16.0.0 \  
-    robotframework-databaselibrary==1.2.4 \
-    robotframework-datadriver==1.7.0 \
-    robotframework-datetime-tz==1.0.6 \
-    robotframework-faker==5.0.0 \
-    robotframework-ftplibrary==1.9 \
-    robotframework-imaplibrary2==0.4.6 \
-    robotframework-pabot==2.13.0 \
-    robotframework-requests==0.9.4 \
-    robotframework-sshlibrary==3.8.0 \
-    PyYAML \
-    robotframework-notifications \
-    pg8000==1.29.4 \
-    tesults \
-    robot-tesults \
-    robotframework-jsonlibrary==0.5 \
-    robotframework-autorecorder \
-    robotframework-screencaplibrary==1.6.0
+Imagem multi-stage baseada em **Ubuntu 24.04** para testes Web/E2E com **Robot Framework 7.2.2**, **Browser Library** (Playwright), Firefox/Chromium, OCR (Tesseract), PDF e utilitários de QA.
 
-### Orientações gerais
-- Utiliza o timezone São Paulo
-- Preparado para a utilização do firefox
-- Para executar é necessário informar caminho dos test_cases na variável ROBOT_TESTS_DIR
-- O diretório de logs pode ser alterado com a variável ROBOT_REPORTS_DIR
-- Para utilizar o tesults basta passar o listener completo na variável ROBOT_LISTENER
-- Usar a variável ROBOT_OPTIONS para passar options do robot framework como --exitonfailure, --name, etc.
+## O que a imagem inclui
 
-### Utilização no Actions
-Esta imagem está no dockerhub, para usar no actions basta adicionar os seguintes steps:
+- **SO e runtime:** Python 3 (pip/venv no sistema), Node.js 20.x, Xvfb, locale `pt_BR.UTF-8`, fuso **America/Sao_Paulo**
+- **Navegadores:** Firefox, pacote `chromium-browser` (Ubuntu); **Playwright Chrome** instalado via `npx playwright` para a Browser Library
+- **Ferramentas:** Tesseract OCR, Poppler (`pdftotext` etc.), OpenVPN (cliente)
 
-        runs-on: ubuntu-18.04
-            steps:
-            - uses: actions/checkout@v2
-            - name: Create folder for reports
-              run:  mkdir -m 777 reports
-            - name: Execute Robot tests
-              uses: carlosnizolli/docker-robotframework@v06.1
-              env:
-                DOCKER_SHM_SIZE: 22000000
-                BROWSER: firefox
-                ROBOT_TESTS_DIR: ${{ github.workspace }}/SuaPasta/SeusTestes.robot
-                ROBOT_REPORTS_DIR: ${{ github.workspace }}/reports
-                ROBOT_OPTIONS: "--exitonfailure"
-                ROBOT_LISTENER: --listener TesultsListener:target=${{ secrets.TESULTS_TARGET }}:build-name=SeuBuildName
- 
- No exemplo está sendo criada uma pasta para gravação dos logs o que permite maior controle para exportações.
- 
+### Bibliotecas Python principais (pip)
+
+| Pacote | Versão (fixa quando indicada) |
+|--------|-------------------------------|
+| robotframework | 7.2.2 |
+| robotframework-browser | 19.12.3 |
+| python-dotenv | 1.1.0 |
+| requests | 2.31.0 |
+| pg8000 | 1.31.1 |
+| google-genai | 1.62.0 |
+| robotframework-heal | 0.2.1 |
+| pdf2image | 1.17.0 |
+| pytesseract | (última compatível) |
+
+Outras bibliotecas Robot instaladas: `robotframework-xvfb`, `robotframework-csvlib`, `robotframework-assertion-engine`, `robotframework-databaselibrary`, `robotframework-datadriver`, `robotframework-datetime-tz`, `robotframework-faker`, `robotframework-imaplibrary2`, `robotframework-pabot`, `robotframework-requests`, `robotframework-notifications`, `robotframework-jsonlibrary`, `robotframework-autorecorder`, `robotframework-screencaplibrary`, `robotframework-jsonschemalibrary`, `robotframework-retryfailed`, `robotframework-excellib`, `robotframework-pdf2textlibrary`, `robotframework-imagetotextlibrary`, `robotframework-otp`, `pyotp`, `chardet`.
+
+> O build usa **BuildKit** (`RUN --mount=type=cache` para pip). Construa com: `DOCKER_BUILDKIT=1 docker build -t sua-imagem .`
+
+## Variáveis de ambiente
+
+| Variável | Padrão | Uso |
+|----------|--------|-----|
+| `ROBOT_TESTS_DIR` | *(obrigatório na prática)* | Caminho dos testes (`.robot` ou pasta) passado ao `robot` / `pabot` |
+| `ROBOT_REPORTS_DIR` | `/opt/robotframework/reports` | Saída de log, relatório e output XML |
+| `ROBOT_WORK_DIR` | `/opt/robotframework/temp` | `WORKDIR` e `HOME` durante a execução |
+| `ROBOT_THREADS` | `1` | Se `1`, roda `robot`; se maior, roda `pabot` com `--processes` |
+| `ROBOT_OPTIONS` | *(vazio)* | Opções extras do Robot (ex.: `--exitonfailure`, `--name`) |
+| `ROBOT_LISTENER` | *(vazio)* | Listeners (ex.: Tesults), repassados ao comando |
+| `PABOT_OPTIONS` | *(vazio)* | Opções extras do Pabot quando `ROBOT_THREADS` > 1 |
+| `SCREEN_WIDTH` / `SCREEN_HEIGHT` / `SCREEN_COLOUR_DEPTH` | `1920` / `1080` / `24` | Display virtual Xvfb |
+
+O script de entrada é `run-tests.sh` (em `/opt/robotframework/bin`, no `PATH`), que executa tudo dentro de `xvfb-run`.
+
+## Uso com Docker
+
+Monte os testes e um diretório para relatórios (o usuário no container é UID/GID **1000**):
+
+```bash
+docker build -t robot-local .
+
+docker run --rm \
+  -e ROBOT_TESTS_DIR=/tests/suite.robot \
+  -e ROBOT_OPTIONS="--exitonfailure" \
+  -v "$(pwd)/tests:/tests:ro" \
+  -v "$(pwd)/reports:/opt/robotframework/reports" \
+  robot-local
+```
+
+Ajuste caminhos e variáveis conforme seu projeto. Para Pabot:
+
+```bash
+docker run --rm \
+  -e ROBOT_THREADS=4 \
+  -e ROBOT_TESTS_DIR=/tests \
+  -v "$(pwd)/tests:/tests:ro" \
+  -v "$(pwd)/reports:/opt/robotframework/reports" \
+  robot-local
+```
+
+## GitHub Actions
+
+Use `docker run` (ou uma action genérica de “run container”) com os mesmos `-e` e `-v` do exemplo acima, apontando `ROBOT_TESTS_DIR` e `ROBOT_REPORTS_DIR` para diretórios dentro de `${{ github.workspace }}`. Runners atuais costumam ser `ubuntu-latest`; não é necessário fixar `ubuntu-18.04`.
+
+---
+
+**Repositório:** [github.com/carlosnizolli/docker-robotframework](https://github.com/carlosnizolli/docker-robotframework)
