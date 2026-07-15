@@ -3,11 +3,11 @@
 # ============================================================================
 FROM ubuntu:24.04 AS base
 
-LABEL maintainer="Carlos Nizolli carlosbarboza@logcomex.com - Robot Framework and libs"
+LABEL maintainer="Carlos Nizolli carlosnizolli@gmail.com - Robot Framework and libs"
 LABEL org.opencontainers.image.title="Robot Framework QA - Web/E2E Testing"
 LABEL org.opencontainers.image.description="Imagem Docker completa para testes automatizados Web/E2E com Robot Framework, Browser Library, Playwright, Self-Healing e IA"
-LABEL org.opencontainers.image.authors="Carlos Nizolli <carlosbarboza@logcomex.com>"
-LABEL org.opencontainers.image.vendor="Logcomex"
+LABEL org.opencontainers.image.authors="Carlos Nizolli <carlosnizolli@gmail.com>"
+LABEL org.opencontainers.image.vendor="Carlos Nizolli"
 LABEL org.opencontainers.image.documentation="https://github.com/carlosnizolli/docker-robotframework/blob/main/README.md"
 LABEL org.opencontainers.image.source="https://github.com/carlosnizolli/docker-robotframework"
 LABEL org.opencontainers.image.url="https://github.com/carlosnizolli/docker-robotframework"
@@ -128,7 +128,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 # Instalar google-genai com versão mais recente que suporta protobuf 6.x
 RUN --mount=type=cache,target=/root/.cache/pip \
     python3 -m pip install --no-cache-dir --break-system-packages \
-    google-genai==1.62.0
+    google-genai==1.62.0 \
+    "robotframework-gemini[browser]>=0.3.1"
 
 # Instalar robotframework-heal separadamente para garantir compatibilidade
 RUN --mount=type=cache,target=/root/.cache/pip \

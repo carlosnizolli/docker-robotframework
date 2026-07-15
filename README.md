@@ -71,6 +71,15 @@ docker run --rm \
 
 Use `docker run` (ou uma action genérica de “run container”) com os mesmos `-e` e `-v` do exemplo acima, apontando `ROBOT_TESTS_DIR` e `ROBOT_REPORTS_DIR` para diretórios dentro de `${{ github.workspace }}`. Runners atuais costumam ser `ubuntu-latest`; não é necessário fixar `ubuntu-18.04`.
 
+## Related projects / Projetos relacionados
+
+| Project | Description |
+|---------|-------------|
+| [robotframework-gemini](https://github.com/carlosnizolli/robotframework-gemini) | Gemini oracles for RF — install with `pip install robotframework-gemini` |
+| [robotframework-gemini_exemplos](https://github.com/carlosnizolli/robotframework-gemini_exemplos) | Example suites to run in this image |
+| [RobotToPGListener](https://github.com/carlosnizolli/RobotToPGListener) | Persist results: `robot --listener robot_to_pg_listener.Listener` |
+| [RoboCop](https://github.com/carlosnizolli/RoboCop) | Lint RF code in CI before image runs |
+
 ---
 
 **Repositório:** [github.com/carlosnizolli/docker-robotframework](https://github.com/carlosnizolli/docker-robotframework)
