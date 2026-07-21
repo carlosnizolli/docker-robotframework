@@ -3,18 +3,15 @@
 # ============================================================================
 FROM ubuntu:24.04 AS base
 
-LABEL maintainer="Carlos Nizolli carlosnizolli@gmail.com - Robot Framework and libs"
+LABEL maintainer="Carlos Nizolli <55762776+carlosnizolli@users.noreply.github.com> - Robot Framework and libs"
 LABEL org.opencontainers.image.title="Robot Framework QA - Web/E2E Testing"
 LABEL org.opencontainers.image.description="Imagem Docker completa para testes automatizados Web/E2E com Robot Framework, Browser Library, Playwright, Self-Healing e IA"
-LABEL org.opencontainers.image.authors="Carlos Nizolli <carlosnizolli@gmail.com>"
+LABEL org.opencontainers.image.authors="Carlos Nizolli <55762776+carlosnizolli@users.noreply.github.com>"
 LABEL org.opencontainers.image.vendor="Carlos Nizolli"
 LABEL org.opencontainers.image.documentation="https://github.com/carlosnizolli/docker-robotframework/blob/main/README.md"
 LABEL org.opencontainers.image.source="https://github.com/carlosnizolli/docker-robotframework"
 LABEL org.opencontainers.image.url="https://github.com/carlosnizolli/docker-robotframework"
 LABEL org.opencontainers.image.version="7.2.2"
-LABEL com.logcomex.image.type="web-testing"
-LABEL com.logcomex.robot.version="7.2.2"
-LABEL com.logcomex.browser.library="19.12.3"
 
 # Variáveis de ambiente
 ENV ROBOT_REPORTS_DIR=/opt/robotframework/reports \
