@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentação (README)
+    url: https://github.com/carlosnizolli/docker-robotframework/blob/main/README.md
+    about: Uso da imagem, variáveis de ambiente e publish no GHCR
+  - name: Pacote GHCR
+    url: https://github.com/carlosnizolli/docker-robotframework/pkgs/container/docker-robotframework
+    about: Tags e versões publicadas da imagem

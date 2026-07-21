@@ -1,0 +1,89 @@
+name: Melhoria ou nova biblioteca
+description: Sugerir melhoria na imagem ou inclusão/atualização de uma lib
+title: "[enhancement] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Descreva a melhoria ou a biblioteca desejada.
+        Imagem: `ghcr.io/carlosnizolli/docker-robotframework`
+
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: Tipo de pedido
+      options:
+        - Nova biblioteca Python / Robot Framework
+        - Atualizar versão de biblioteca já instalada
+        - Remover biblioteca
+        - Melhoria no Dockerfile / imagem (SO, browser, ferramentas)
+        - Melhoria no script de execução (run-tests.sh)
+        - Melhoria na documentação (README)
+        - Outro
+    validations:
+      required: true
+
+  - type: input
+    id: package
+    attributes:
+      label: Nome do pacote (se aplicável)
+      description: Nome no PyPI ou no Robot Framework
+      placeholder: robotframework-exemplo
+
+  - type: input
+    id: version
+    attributes:
+      label: Versão sugerida
+      description: Deixe em branco se quiser a última estável
+      placeholder: 1.2.3
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivação
+      description: Por que isso deveria entrar na imagem? Qual caso de uso?
+    validations:
+      required: true
+
+  - type: textarea
+    id: usage
+    attributes:
+      label: Como seria usado
+      description: Exemplo de import / keyword / trecho de suite, se tiver
+      render: text
+      placeholder: |
+        *** Settings ***
+        Library    ExemploLibrary
+
+  - type: textarea
+    id: links
+    attributes:
+      label: Links
+      description: PyPI, docs, GitHub da lib, issues relacionadas
+      placeholder: |
+        - https://pypi.org/project/...
+        - https://github.com/...
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridade para você
+      options:
+        - Nice to have
+        - Importante no meu fluxo
+        - Bloqueante (não consigo usar a imagem sem isso)
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: Verifiquei se a lib já está no Dockerfile / README
+          required: false
+        - label: A lib é compatível com Robot Framework 7.x e Python 3 da imagem (quando souber)
+          required: false
+        - label: Aceito que o tamanho da imagem / tempo de build possam aumentar
+          required: false

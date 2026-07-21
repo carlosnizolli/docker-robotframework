@@ -1,0 +1,90 @@
+name: Bug report
+description: Problema ao buildar, publicar ou executar a imagem Docker
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por reportar. Preencha o máximo possível — facilita reproduzir o problema.
+        Imagem: `ghcr.io/carlosnizolli/docker-robotframework`
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Onde ocorreu?
+      options:
+        - Build da imagem (Dockerfile)
+        - Pull / execução (docker run)
+        - Workflow de publish (GitHub Actions)
+        - Biblioteca / Robot Framework dentro do container
+        - Outro
+    validations:
+      required: true
+
+  - type: input
+    id: image-tag
+    attributes:
+      label: Tag da imagem
+      description: Ex. `latest`, `7.2.2`, `sha-…`
+      placeholder: latest
+    validations:
+      required: true
+
+  - type: textarea
+    id: command
+    attributes:
+      label: Comando usado
+      description: `docker build`, `docker run` ou trecho do workflow
+      render: bash
+      placeholder: |
+        docker run --rm \
+          -e ROBOT_TESTS_DIR=/tests \
+          -v "$(pwd)/tests:/tests:ro" \
+          -v "$(pwd)/reports:/opt/robotframework/reports" \
+          ghcr.io/carlosnizolli/docker-robotframework:latest
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamento esperado
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportamento atual
+      description: Inclua mensagens de erro relevantes
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / stack trace
+      render: text
+
+  - type: textarea
+    id: env
+    attributes:
+      label: Ambiente
+      description: SO host, Docker / Docker Desktop version, runner (se Actions)
+      placeholder: |
+        - Host: Ubuntu 24.04
+        - Docker: 27.x
+        - Arquitetura: amd64
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: Consultei o README e as variáveis (`ROBOT_TESTS_DIR`, `ROBOT_REPORTS_DIR`, etc.)
+          required: false
+        - label: O problema também ocorre com a tag `latest` (se aplicável)
+          required: false
+        - label: Não incluí secrets, tokens nem dados sensíveis neste issue
+          required: true
