@@ -75,6 +75,7 @@ Use `docker run` (ou uma action genérica de “run container”) com os mesmos 
 
 | Project | Description |
 |---------|-------------|
+| [robotframework-docker-actions](https://github.com/carlosnizolli/robotframework-docker-actions) | GitHub Action to run this image in CI / Marketplace |
 | [robotframework-gemini](https://github.com/carlosnizolli/robotframework-gemini) | Gemini oracles for RF — install with `pip install robotframework-gemini` |
 | [robotframework-gemini_exemplos](https://github.com/carlosnizolli/robotframework-gemini_exemplos) | Example suites to run in this image |
 | [RobotToPGListener](https://github.com/carlosnizolli/RobotToPGListener) | Persist results: `robot --listener robot_to_pg_listener.Listener` |
